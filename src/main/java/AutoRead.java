@@ -165,7 +165,7 @@ public class AutoRead {
 
         //Loop through all search queries and add them to list
         List<Message> matched = listMessagesMatchingQuery(service, user, searchQueries.get(0) + " " + beforeafter);
-        for(int i = 1; i < searchQueries.size()-1; i++) {
+        for(int i = 1; i < searchQueries.size(); i++) {
             //System.out.println("query: " + searchQueries.get(i) + " " + beforeafter);
             matched.addAll(listMessagesMatchingQuery(service, user, searchQueries.get(i)));
         }
@@ -173,11 +173,13 @@ public class AutoRead {
         System.out.println("Found all");
         long start = System.nanoTime();
 
-        //System.out.println("Labels: " + matched.get(0).getLabelIds());
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), markRead).execute();
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), markUnread).execute();
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
-
+        for(int i = 0; i < matched.size(); i++) {
+            //System.out.println("Labels: " + matched.get(0).getLabelIds());
+            Message temp = service.users().messages().modify(user, matched.get(i).getId(), markRead).execute();
+            System.out.println("temp: " + temp);
+            //temp = service.users().messages().modify(user, matched.get(0).getId(), markUnread).execute();
+            //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
+        }
 
         HashMap<String, Integer> messageCounts = new HashMap<>();
 
@@ -243,7 +245,8 @@ public class AutoRead {
         fileWriter.close();
 
         long FinEnd = System.nanoTime();
-        System.out.println("Total Elapsed Time: " + (FinEnd - start));
+        long elapsed = FinEnd - start;
+        System.out.println("Total Elapsed Time: " + (elapsed) + " In seconds: " + (elapsed/1000000000.0));
 
 
     }

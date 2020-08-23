@@ -98,10 +98,9 @@ public class Count {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
 
-        // Print the labels in the user's account.
         String user = "me";
 
-
+// Print the labels in the user's account.
 //        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
 //        List<Label> labels = listResponse.getLabels();
 //        if (labels.isEmpty()) {
@@ -113,70 +112,12 @@ public class Count {
 //            }
 //        }
 
-        File file = new File(".\\src\\main\\resources\\input.txt");
-
-        BufferedReader br = new BufferedReader(new FileReader(file));
-
-        String platform = br.readLine();
-        Long timeBefore = Long.parseLong(br.readLine());
-        br.readLine();
-
-        //unread
-        br.readLine();
-        String readOrUnread = br.readLine();
-
-        //Addresses
-        br.readLine();
-        br.readLine();
-
-        ArrayList<String> searchQueries = new ArrayList<>();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         long currentDate = System.currentTimeMillis();
 
-        String beforeafter = " before:" +  sdf.format(new Timestamp(System.currentTimeMillis() - timeBefore)); //yyyy/m/d
-
-        System.out.println(beforeafter);
-
-        String tempAdds = "";
-        tempAdds = br.readLine();
-        while(!tempAdds.equals("")){
-            searchQueries.add("from:(" + tempAdds + ") is:" + readOrUnread + beforeafter);
-            tempAdds = br.readLine();
-        }
-
-
-        //Search strings
-        br.readLine();
-        String tempSearch;
-        tempSearch = br.readLine();
-        while(!tempSearch.equals("")){
-            searchQueries.add(tempSearch);
-            tempSearch= br.readLine();
-        }
-
-        br.close();
-
-        //Mark as read
-        ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
-        ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
-        ModifyMessageRequest nothing = new ModifyMessageRequest();
-
-        //Loop through all search queries and add them to list
-        List<Message> matched = listMessagesMatchingQuery(service, user, searchQueries.get(0) + " " + beforeafter);
-        for(int i = 1; i < searchQueries.size()-1; i++) {
-            //System.out.println("query: " + searchQueries.get(i) + " " + beforeafter);
-            matched.addAll(listMessagesMatchingQuery(service, user, searchQueries.get(i)));
-        }
-
-        System.out.println("Found all");
         long start = System.nanoTime();
 
-        //System.out.println("Labels: " + matched.get(0).getLabelIds());
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), markRead).execute();
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), markUnread).execute();
-        //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
-
+        //Looks at all messages
+        List<Message> matched = listMessagesMatchingQuery(service, user, "*");
 
         HashMap<String, Integer> messageCounts = new HashMap<>();
 
@@ -228,21 +169,19 @@ public class Count {
             //System.out.println("Per for loop run: " + (oneRunEnd - oneRun) + " P1: " + (p1 - oneRun) + " P2: " + (oneRunEnd - p1));
         }
 
-
-        //System.out.println("HashMap: " + messageCounts);
-
         System.out.println("Matched: " + matched.size());
 
         String outToFile = "" + messageCounts;
         //String outToFile = "" + senderSize;
 
-        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count7-" + currentDate + ".txt");
+        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count-" + currentDate + ".txt");
 
         fileWriter.write(outToFile);
         fileWriter.close();
 
         long FinEnd = System.nanoTime();
-        System.out.println("Total Elapsed Time: " + (FinEnd - start));
+        long elapsed = FinEnd - start;
+        System.out.println("Total Elapsed Time: " + (elapsed) + " In seconds: " + (elapsed/1000000000.0));
 
 
     }
