@@ -15,7 +15,6 @@ import com.google.api.services.gmail.model.Message;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,7 +40,7 @@ public class Count {
      */
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = GmailQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = GmailQuickstart2.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
         }

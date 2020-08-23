@@ -10,17 +10,18 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.*;
+import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.MessagePartHeader;
+import com.google.api.services.gmail.model.ModifyMessageRequest;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.io.IOException;
 
-public class AutoReader {
+public class AutoRead {
     private static final String APPLICATION_NAME = "Gmail API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -86,6 +87,7 @@ public class AutoReader {
 //        for (Message message : messages) {
 //            System.out.println(message.toPrettyString());
 //        }
+//        System.out.println(messages.size());
 
         return messages;
     }
@@ -163,10 +165,8 @@ public class AutoReader {
 
         //Loop through all search queries and add them to list
         List<Message> matched = listMessagesMatchingQuery(service, user, searchQueries.get(0) + " " + beforeafter);
-        //System.out.println("query: " + searchQueries.get(0) + " " + beforeafter);
-        //System.out.println("matched: " + matched.size());
         for(int i = 1; i < searchQueries.size()-1; i++) {
-            System.out.println("query: " + searchQueries.get(i) + " " + beforeafter);
+            //System.out.println("query: " + searchQueries.get(i) + " " + beforeafter);
             matched.addAll(listMessagesMatchingQuery(service, user, searchQueries.get(i)));
         }
 
@@ -186,13 +186,9 @@ public class AutoReader {
         //Find all unique senders and count emails from each.
         for(Message mail: matched){
             //long oneRun = System.nanoTime();
-
-            mail = service.users().messages().modify(user, mail.getId(), markRead).execute();
-            //mail = service.users().messages().modify(user, mail.getId(), markUnread).execute();
-
             List<MessagePartHeader> heads = service.users().messages().get(user, mail.getId()).execute().getPayload().getHeaders();
-
             String sender = "";
+            //System.out.println(mail.getSnippet());
             try {
                 for (int i = heads.size() - 1; i >= 0; i--) {
                     //for(MessagePartHeader headPortion: heads){
