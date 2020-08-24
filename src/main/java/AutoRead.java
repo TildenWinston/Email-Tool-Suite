@@ -101,7 +101,7 @@ public class AutoRead {
 
         // Print the labels in the user's account.
         String user = "me";
-
+        long start = System.nanoTime();
 
 //        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
 //        List<Label> labels = listResponse.getLabels();
@@ -171,13 +171,33 @@ public class AutoRead {
         }
 
         System.out.println("Found all");
-        long start = System.nanoTime();
+
+        List<String> MessagesRead = new ArrayList<String>() {};
 
         for(int i = 0; i < matched.size(); i++) {
             //System.out.println("Labels: " + matched.get(0).getLabelIds());
-            Message temp = service.users().messages().modify(user, matched.get(i).getId(), markRead).execute();
-            System.out.println("temp: " + temp);
-            //temp = service.users().messages().modify(user, matched.get(0).getId(), markUnread).execute();
+            Message tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markRead).execute();
+            //System.out.println(i + " temp: " + tempMessage);
+
+            List<MessagePartHeader> heads = service.users().messages().get(user, matched.get(i).getId()).execute().getPayload().getHeaders();
+            String subject = "";
+            try {
+                for (int n = heads.size() - 1; n >= 0; n--) {
+                    //for(MessagePartHeader headPortion: heads){
+                    //System.out.println(headPortion.getName());
+                    MessagePartHeader tempHeader = heads.get(n);
+                    if (tempHeader.getName().equals("Subject")) {
+                        subject = tempHeader.getValue();
+                        break;
+                    }
+                }
+                //System.out.println("Subject: " + subject + " Headers: " + tempMessage);
+                MessagesRead.add("Subject: " + subject + " Headers: " + tempMessage);
+            } catch (Exception e) {
+
+            }
+
+            tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
             //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
         }
 
@@ -221,16 +241,12 @@ public class AutoRead {
                     messageCounts.put(sender, emails + 1);
                 }
 
-
-
-            }
-            catch(Exception e){
+            } catch (Exception e) {
 
             }
             //long oneRunEnd = System.nanoTime();
             //System.out.println("Per for loop run: " + (oneRunEnd - oneRun) + " P1: " + (p1 - oneRun) + " P2: " + (oneRunEnd - p1));
         }
-
 
         //System.out.println("HashMap: " + messageCounts);
 
@@ -238,8 +254,9 @@ public class AutoRead {
 
         String outToFile = "" + messageCounts;
         //String outToFile = "" + senderSize;
+        outToFile = outToFile + "\n" + "Emails Read: \n" + MessagesRead;
 
-        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count7-" + currentDate + ".txt");
+        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count-" + currentDate + ".txt");
 
         fileWriter.write(outToFile);
         fileWriter.close();
@@ -247,7 +264,5 @@ public class AutoRead {
         long FinEnd = System.nanoTime();
         long elapsed = FinEnd - start;
         System.out.println("Total Elapsed Time: " + (elapsed) + " In seconds: " + (elapsed/1000000000.0));
-
-
     }
 }
