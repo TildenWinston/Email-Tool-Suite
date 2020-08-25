@@ -175,20 +175,8 @@ public class AutoRead {
         ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
         // labels
         // get label id
-        String autoReadLabelId = "";
-        try {
-            for (int n = labels.size() - 1; n >= 0; n--) {
-                //for(MessagePartHeader headPortion: heads){
-                //System.out.println(headPortion.getName());
-                Label tempLabel = labels.get(n);
-                if (tempLabel.getName().equals("Auto Read")) {
-                    autoReadLabelId = tempLabel.getId();
-                    break;
-                }
-            }
-        } catch (Exception e) {
-
-        }
+        String autoReadLabelId = getLabelId(labels);
+        
         markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
         ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
         //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
