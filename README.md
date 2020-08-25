@@ -13,6 +13,7 @@ Planned features:
 * Add test cases
 * Create graphs from count or size data
 * Auto-run on set interval
+* Switch from "before" to "older_than"
 
 How to set up (Incomplete):
 Download project, ensure java and Gradle are both installed (See: https://developers.google.com/gmail/api/quickstart/java)
@@ -42,6 +43,7 @@ input.txt should look like:
     Addresses to look at:
     email@example.com
     email2@example.com
+    business.com
 
     Search stings to look at: (Full formatted. Nothing will be added to these. Good for emails that come from multiple addresses, but have another common thread.)
     subject:(Newsletter) is:unread before:2019/04/30

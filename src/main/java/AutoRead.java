@@ -10,10 +10,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.ListMessagesResponse;
-import com.google.api.services.gmail.model.Message;
-import com.google.api.services.gmail.model.MessagePartHeader;
-import com.google.api.services.gmail.model.ModifyMessageRequest;
+import com.google.api.services.gmail.model.*;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -92,6 +89,22 @@ public class AutoRead {
         return messages;
     }
 
+    public static String getLabelId(List<Label> labels){
+        try {
+            for (int n = labels.size() - 1; n >= 0; n--) {
+                //for(MessagePartHeader headPortion: heads){
+                //System.out.println(headPortion.getName());
+                Label tempLabel = labels.get(n);
+                if (tempLabel.getName().equals("Auto Read")) {
+                    return tempLabel.getId();
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return "";
+    }
+
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -103,14 +116,14 @@ public class AutoRead {
         String user = "me";
         long start = System.nanoTime();
 
-//        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
-//        List<Label> labels = listResponse.getLabels();
+        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
+        List<Label> labels = listResponse.getLabels();
 //        if (labels.isEmpty()) {
 //            System.out.println("No labels found.");
 //        } else {
 //            System.out.println("Labels:");
 //            for (Label label : labels) {
-//                System.out.printf("- %s\n", label.getName());
+//                System.out.printf("- %s id: %s\n", label.getName(), label.getId());
 //            }
 //        }
 
@@ -146,7 +159,6 @@ public class AutoRead {
             tempAdds = br.readLine();
         }
 
-
         //Search strings
         br.readLine();
         String tempSearch;
@@ -158,9 +170,28 @@ public class AutoRead {
 
         br.close();
 
+
         //Mark as read
         ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
+        // labels
+        // get label id
+        String autoReadLabelId = "";
+        try {
+            for (int n = labels.size() - 1; n >= 0; n--) {
+                //for(MessagePartHeader headPortion: heads){
+                //System.out.println(headPortion.getName());
+                Label tempLabel = labels.get(n);
+                if (tempLabel.getName().equals("Auto Read")) {
+                    autoReadLabelId = tempLabel.getId();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
         ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
+        //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
         ModifyMessageRequest nothing = new ModifyMessageRequest();
 
         //Loop through all search queries and add them to list
@@ -173,6 +204,9 @@ public class AutoRead {
         System.out.println("Found all");
 
         List<String> MessagesRead = new ArrayList<String>() {};
+
+        //service.users().messages().batchModify(matched, ,markUnread);
+
 
         for(int i = 0; i < matched.size(); i++) {
             //System.out.println("Labels: " + matched.get(0).getLabelIds());
