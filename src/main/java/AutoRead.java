@@ -170,18 +170,6 @@ public class AutoRead {
 
         br.close();
 
-
-        //Mark as read
-        ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
-        // labels
-        // get label id
-        String autoReadLabelId = getLabelId(labels);
-        
-        markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
-        ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
-        //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
-        ModifyMessageRequest nothing = new ModifyMessageRequest();
-
         //Loop through all search queries and add them to list
         List<Message> matched = listMessagesMatchingQuery(service, user, searchQueries.get(0) + " " + beforeafter);
         for(int i = 1; i < searchQueries.size(); i++) {
@@ -189,7 +177,18 @@ public class AutoRead {
             matched.addAll(listMessagesMatchingQuery(service, user, searchQueries.get(i)));
         }
 
+        long searchTime = System.nanoTime() - start;
         System.out.println("Found all");
+
+        //Mark as read
+        ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
+        // labels
+        // get label id
+        String autoReadLabelId = getLabelId(labels);
+        markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
+        ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
+        //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
+        ModifyMessageRequest nothing = new ModifyMessageRequest();
 
         List<String> MessagesRead = new ArrayList<String>() {};
 
@@ -219,9 +218,11 @@ public class AutoRead {
 
             }
 
-            tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
+            //tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
             //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
         }
+
+        long readTime = System.nanoTime() - searchTime - start;
 
         HashMap<String, Integer> messageCounts = new HashMap<>();
 
@@ -283,8 +284,12 @@ public class AutoRead {
         fileWriter.write(outToFile);
         fileWriter.close();
 
+        long loggingTime = System.nanoTime() - readTime - searchTime - start;
         long FinEnd = System.nanoTime();
         long elapsed = FinEnd - start;
+        System.out.println("Search Time: " + (searchTime) + " In seconds: " + (searchTime/1000000000.0));
+        System.out.println("Read Time: " + (readTime) + " In seconds: " + (readTime/1000000000.0));
+        System.out.println("Logging Time: " + (loggingTime) + " In seconds: " + (loggingTime/1000000000.0));
         System.out.println("Total Elapsed Time: " + (elapsed) + " In seconds: " + (elapsed/1000000000.0));
     }
 }
