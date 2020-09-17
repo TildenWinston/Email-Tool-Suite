@@ -48,5 +48,5 @@ input.txt should look like:
     Search stings to look at: (Full formatted. Nothing will be added to these. Good for emails that come from multiple addresses, but have another common thread.)
     subject:(Newsletter) is:unread before:2019/04/30
 
-
+Run AutoRead.java to automatically mark emails as read. Size.java and Count.java can also be run and they don't make any account changes so they are good places to start.
 
