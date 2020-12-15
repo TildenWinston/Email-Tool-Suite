@@ -158,12 +158,8 @@ public class Count {
                 } else {
                     messageCounts.put(sender, emails + 1);
                 }
-
-
-
             }
             catch(Exception e){
-
             }
             //long oneRunEnd = System.nanoTime();
             //System.out.println("Per for loop run: " + (oneRunEnd - oneRun) + " P1: " + (p1 - oneRun) + " P2: " + (oneRunEnd - p1));
@@ -175,8 +171,8 @@ public class Count {
         //String outToFile = "" + senderSize;
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String prettyDate = sdf.format(new Timestamp(System.currentTimeMillis() - currentDate));
-
+        String prettyDate = sdf.format(new Timestamp(currentDate));
+        System.out.println(prettyDate);
         FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count-" + prettyDate + ".txt");
 
         fileWriter.write(outToFile);

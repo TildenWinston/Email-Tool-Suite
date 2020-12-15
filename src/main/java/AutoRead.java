@@ -142,6 +142,11 @@ public class AutoRead {
         br.readLine();
         String readOrUnread = br.readLine();
 
+        //testrun or not?
+        br.readLine();
+        br.readLine();
+        String testRun = br.readLine();
+
         //Addresses
         br.readLine();
         br.readLine();
@@ -228,8 +233,10 @@ public class AutoRead {
 
             //FOR TESTING
             //Returns message to unread state
-            //tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
-            //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
+            if(testRun.equals("yes")) {
+                tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
+                //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
+            }
         }
 
         long readTime = System.nanoTime() - searchTime - start;
