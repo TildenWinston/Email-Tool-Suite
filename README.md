@@ -40,7 +40,7 @@ input.txt should look like:
     Unread? (unread or read)
     unread
 
-    Test Run? (yes or no)
+    Test Run? (yes or no) - By setting test run to yes, changes will be undone and not cause any changes. Logging and counts will appear like normal
     no
     
     Addresses to look at:
