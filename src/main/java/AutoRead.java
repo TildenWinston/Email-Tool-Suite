@@ -127,15 +127,18 @@ public class AutoRead {
 //            }
 //        }
 
-        File file = new File(".\\src\\main\\resources\\input.txt");
+        File file = new File(".\\src\\main\\resources\\input tildenwinston.txt");
+
 
         BufferedReader br = new BufferedReader(new FileReader(file));
 
         String platform = br.readLine();
+        //Time period to ignore. Find emails more than N miliseconds old and mark those as read
         Long timeBefore = Long.parseLong(br.readLine());
-        br.readLine();
+
 
         //unread
+        br.readLine();
         br.readLine();
         String readOrUnread = br.readLine();
 
@@ -154,18 +157,22 @@ public class AutoRead {
 
         String tempAdds = "";
         tempAdds = br.readLine();
+        //System.out.println(tempAdds);
         while(!tempAdds.equals("")){
             searchQueries.add("from:(" + tempAdds + ") is:" + readOrUnread + beforeafter);
             tempAdds = br.readLine();
+            //System.out.println(tempAdds);
         }
 
         //Search strings
         br.readLine();
         String tempSearch;
         tempSearch = br.readLine();
-        while(!tempSearch.equals("")){
+        //System.out.println(tempSearch);
+        while(br.ready() || !tempSearch.equals("")){
             searchQueries.add(tempSearch);
-            tempSearch= br.readLine();
+            tempSearch = br.readLine();
+            //System.out.println(tempSearch);
         }
 
         br.close();
@@ -188,7 +195,7 @@ public class AutoRead {
         markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
         ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
         //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
-        ModifyMessageRequest nothing = new ModifyMessageRequest();
+        //ModifyMessageRequest nothing = new ModifyMessageRequest();
 
         List<String> MessagesRead = new ArrayList<String>() {};
 
@@ -197,6 +204,7 @@ public class AutoRead {
 
         for(int i = 0; i < matched.size(); i++) {
             //System.out.println("Labels: " + matched.get(0).getLabelIds());
+            //Marks the email as read
             Message tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markRead).execute();
             //System.out.println(i + " temp: " + tempMessage);
 
@@ -218,6 +226,8 @@ public class AutoRead {
 
             }
 
+            //FOR TESTING
+            //Returns message to unread state
             //tempMessage = service.users().messages().modify(user, matched.get(i).getId(), markUnread).execute();
             //Message temp = service.users().messages().modify(user, matched.get(0).getId(), nothing).execute();
         }

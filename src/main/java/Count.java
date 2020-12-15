@@ -174,7 +174,10 @@ public class Count {
         String outToFile = "" + messageCounts;
         //String outToFile = "" + senderSize;
 
-        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count-" + currentDate + ".txt");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String prettyDate = sdf.format(new Timestamp(System.currentTimeMillis() - currentDate));
+
+        FileWriter fileWriter = new FileWriter(".\\src\\main\\resources\\count-" + prettyDate + ".txt");
 
         fileWriter.write(outToFile);
         fileWriter.close();
