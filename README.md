@@ -40,6 +40,9 @@ input.txt should look like:
     Unread? (unread or read)
     unread
 
+    Test Run? (yes or no)
+    no
+    
     Addresses to look at:
     email@example.com
     email2@example.com
