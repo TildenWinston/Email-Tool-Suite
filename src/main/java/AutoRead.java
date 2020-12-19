@@ -89,8 +89,10 @@ public class AutoRead {
         return messages;
     }
 
-    public static String getLabelId(List<Label> labels){
+    public static String getLabelId(Gmail service, String user){
         try {
+            ListLabelsResponse listResponse = service.users().labels().list(user).execute();
+            List<Label> labels = listResponse.getLabels();
             for (int n = labels.size() - 1; n >= 0; n--) {
                 //for(MessagePartHeader headPortion: heads){
                 //System.out.println(headPortion.getName());
@@ -99,8 +101,15 @@ public class AutoRead {
                     return tempLabel.getId();
                 }
             }
+            Label auto = new Label();
+            auto.setName("Auto Read");
+            auto.setLabelListVisibility("labelShow");
+            auto.setMessageListVisibility("hide");
+            auto = service.users().labels().create(user, auto).execute();
+            System.out.println(auto.getName());
+            return auto.getId();
         } catch (Exception e) {
-
+            System.out.println(e);
         }
         return "";
     }
@@ -116,8 +125,8 @@ public class AutoRead {
         String user = "me";
         long start = System.nanoTime();
 
-        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
-        List<Label> labels = listResponse.getLabels();
+//        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
+//       List<Label> labels = listResponse.getLabels();
 //        if (labels.isEmpty()) {
 //            System.out.println("No labels found.");
 //        } else {
@@ -127,7 +136,7 @@ public class AutoRead {
 //            }
 //        }
 
-        File file = new File(".\\src\\main\\resources\\input tildenwinston.txt");
+        File file = new File(".\\src\\main\\resources\\input.txt");
 
 
         BufferedReader br = new BufferedReader(new FileReader(file));
@@ -173,11 +182,11 @@ public class AutoRead {
         br.readLine();
         String tempSearch;
         tempSearch = br.readLine();
-        //System.out.println(tempSearch);
-        while(br.ready() || !tempSearch.equals("")){
+        System.out.println(tempSearch);
+        while(br.ready() && !tempSearch.equals("")){
             searchQueries.add(tempSearch);
             tempSearch = br.readLine();
-            //System.out.println(tempSearch);
+            System.out.println(tempSearch);
         }
 
         br.close();
@@ -196,7 +205,7 @@ public class AutoRead {
         ModifyMessageRequest markRead = new ModifyMessageRequest().setRemoveLabelIds(Collections.singletonList("UNREAD"));
         // labels
         // get label id
-        String autoReadLabelId = getLabelId(labels);
+        String autoReadLabelId = getLabelId(service, user);
         markRead.setAddLabelIds(Collections.singletonList(autoReadLabelId));
         ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));
         //ModifyMessageRequest markUnread = new ModifyMessageRequest().setAddLabelIds(Collections.singletonList("UNREAD"));

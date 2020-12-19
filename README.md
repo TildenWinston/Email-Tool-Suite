@@ -12,7 +12,7 @@ Planned features:
 * Introduce greater code reuse
 * Add test cases
 * Create graphs from count or size data
-* Auto-run on set interval
+* Auto-run on set interval - currently could be achieved by setting a chron job
 * Switch from "before" to "older_than"
 
 How to set up (Incomplete):
